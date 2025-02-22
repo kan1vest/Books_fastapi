@@ -1,8 +1,9 @@
 import email
 from operator import contains
 import re
+from unittest import result
 from fastapi import HTTPException
-from sqlalchemy import Integer, True_, and_, cast, func, insert, inspect, or_, select, text, true, tuple_
+from sqlalchemy import Integer, True_, and_, cast, delete, func, insert, inspect, or_, select, text, true, tuple_
 from sqlalchemy.orm import aliased, contains_eager, joinedload, selectinload
 
 from database import Base, async_engine, async_session_factory, session_factory, sync_engine
@@ -142,17 +143,62 @@ class AsyncORM:
             res = await session.execute(query)
             upd_id = res.first()
             upd = await session.get(BooksOrm, upd_id[0])
+            book = {
+                'bookname': upd.bookname, 
+                'author': upd.author, 
+                'description': upd.description, 
+                'Genre': upd.Genre, 
+                'quantity': upd.quantity,
+            } 
             if updates.description:
                 upd.description = updates.description
             if updates.Genre:
                 upd.Genre = updates.Genre
             if updates.quantity:
                 upd.quantity = updates.quantity
+            book_update = {
+                'bookname': upd.bookname, 
+                'author': upd.author, 
+                'description': upd.description, 
+                'Genre': upd.Genre, 
+                'quantity': upd.quantity,
+            }     
             await session.flush()
             await session.commit()
             return {
-                "msg": 'Книга '
+                'Книга с параметрами': book,
+                "Изменена на книгу с параметрами": book_update
             }
+                
+    @staticmethod
+    async def delete_book(delete_data):
+        async with async_session_factory() as session:
+            query_select = (
+                select(BooksOrm)
+                .filter(
+                    and_(
+                    BooksOrm.bookname.contains(delete_data.bookname),
+                    BooksOrm.author.contains(delete_data.author) 
+                )
+                    )
+            )
+            query_delete = (
+                delete(BooksOrm)
+                .filter(
+                    and_(
+                    BooksOrm.bookname.contains(delete_data.bookname),
+                    BooksOrm.author.contains(delete_data.author) 
+                )
+                    )
+            )
+            res = await session.execute(query_select)
+            await session.execute(query_delete)
+            result = res.scalars().all()
+            await session.commit()
+            return {
+                'Удалена книга с параметрами':  result
+            }         
+            
 
 # CRUD авторы ############################################################
     @staticmethod

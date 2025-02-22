@@ -37,3 +37,7 @@ class BooksUpdateSсhema(BaseModel):
    Genre: Optional[str] = Field(None)
    quantity: Optional[int] = Field(None)
 
+class BooksDeleteSсhema(BaseModel):
+   bookname: Optional[str] = Field('book_1', pattern=r"^\S*$")
+   author: Optional[str] = Field('author_1', pattern=r"^\S*$")
+

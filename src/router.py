@@ -8,7 +8,7 @@ from sqlalchemy import table
 from queries.orm import AsyncORM, get_password_hash, verify_password
 from authx import AuthX, AuthXConfig, TokenPayload
 
-from schemas import BooksFilterSсhema, BooksSсhema, BooksUpdateSсhema, UserAuthSсhema, UserLoginSсhema
+from schemas import BooksDeleteSсhema, BooksFilterSсhema, BooksSсhema, BooksUpdateSсhema, UserAuthSсhema, UserLoginSсhema
 
 from config import settings
 
@@ -115,9 +115,9 @@ async def update_books(updates: Annotated[BooksUpdateSсhema, Depends()]):
     return await AsyncORM.update_book(updates)
 
 
-@router.get("/protected_admin/{delete_books}", tags=["CRUD для книг"], dependencies=[Depends(security_admin.access_token_required)])
-async def delete_books():
-    return await AsyncORM.select_users()
+@router.delete("/protected_admin/{delete_books}", tags=["CRUD для книг"], dependencies=[Depends(security_admin.access_token_required)])
+async def delete_books(delete: Annotated[BooksDeleteSсhema, Depends()]):
+    return await AsyncORM.delete_book(delete)
 
 
 
