@@ -57,6 +57,9 @@ class AuthorUpdateSсhema(BaseModel):
    biography: Optional[str] = Field('biography_1', pattern=r"^\S*$")
    date_of_born: Optional[str] = Field(None)
 
+class AuthorDeleteSсhema(BaseModel):
+   authorname: str = Field('author_1', pattern=r"^\S*$")
+
 
 
 

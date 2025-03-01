@@ -272,7 +272,29 @@ class AsyncORM:
                 "Изменен на автора с параметрами": author_update
             }
 
-
+    @staticmethod
+    async def delete_author(delete_data):
+        async with async_session_factory() as session:
+            query_select = (
+                select(AuthorOrm)
+                .filter(
+                    AuthorOrm.authorname.contains(delete_data.authorname)
+                    )
+            )
+            query_delete = (
+                delete(AuthorOrm)
+                .filter(
+                    AuthorOrm.authorname.contains(delete_data.authorname)
+                    )
+            )
+            res = await session.execute(query_select)
+            await session.execute(query_delete)
+            result = res.scalars().all()
+            name = result[0].authorname
+            await session.commit()
+            return {
+                'Удален автор с именем':  name
+            }         
 
 
 

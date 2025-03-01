@@ -8,7 +8,7 @@ from sqlalchemy import table
 from queries.orm import AsyncORM, get_password_hash, verify_password
 from authx import AuthX, AuthXConfig, TokenPayload
 
-from schemas import AuthorFilterSсhema, AuthorSсhema, AuthorUpdateSсhema, BooksDeleteSсhema, BooksFilterSсhema, BooksSсhema, BooksUpdateSсhema, UserAuthSсhema, UserLoginSсhema
+from schemas import AuthorDeleteSсhema, AuthorFilterSсhema, AuthorSсhema, AuthorUpdateSсhema, BooksDeleteSсhema, BooksFilterSсhema, BooksSсhema, BooksUpdateSсhema, UserAuthSсhema, UserLoginSсhema
 
 from config import settings
 
@@ -155,10 +155,10 @@ async def read_author(author_filter: Annotated[AuthorFilterSсhema, Depends()]):
 async def update_author(updates: Annotated[AuthorUpdateSсhema, Depends()]):
     return await AsyncORM.update_author(updates)
 
-""" 
-@router.delete("/protected_admin/", tags=["CRUD для авторов"], dependencies=[Depends(security_admin.access_token_required)])
-async def delete_author(delete: Annotated[BooksDeleteSсhema, Depends()]):
-    return await AsyncORM.delete_author(delete) """
+
+@router.delete("/protected_admin/author/", tags=["CRUD для авторов"], dependencies=[Depends(security_admin.access_token_required)])
+async def delete_author(delete_data: Annotated[AuthorDeleteSсhema, Depends()]):
+    return await AsyncORM.delete_author(delete_data)
 
 
     
