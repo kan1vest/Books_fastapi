@@ -7,7 +7,7 @@ from sqlalchemy import Integer, True_, and_, cast, delete, func, insert, inspect
 from sqlalchemy.orm import aliased, contains_eager, joinedload, selectinload
 
 from database import Base, async_engine, async_session_factory, session_factory, sync_engine
-from models import UsersOrm, BooksOrm, AuthorOrm
+from models import AuthorOrm, UsersOrm, BooksOrm
 
 from passlib.context import CryptContext
 from sqlalchemy.sql._elements_constructors import true
@@ -74,9 +74,9 @@ class AsyncORM:
     @staticmethod
     async def select_users():
         async with async_session_factory() as session:
-            query = select(UsersOrm.username, UsersOrm.email)
+            query = select(UsersOrm)
             result = await session.execute(query)
-            res = dict(result.all())
+            res = result.scalars().all()
             return res
 
     # CRUD для книг  ############################################################
@@ -93,9 +93,9 @@ class AsyncORM:
             await session.commit()
 
     @staticmethod
-    async def create_books(bookname, authors, description, Genre, quantity):
+    async def create_books(bookname, author, description, Genre, quantity):
         async with async_session_factory() as session:
-            book = BooksOrm(bookname=bookname, authors=authors, description=description, Genre=Genre, quantity=quantity)
+            book = BooksOrm(bookname=bookname, author=author, description=description, Genre=Genre, quantity=quantity)
             session.add(book)
             # flush взаимодействует с БД, поэтому пишем await
             await session.flush() 
@@ -201,6 +201,103 @@ class AsyncORM:
             
 
 # CRUD авторы ############################################################
+    
+    @staticmethod
+    async def insert_authors():
+        async with async_session_factory() as session:
+            author_1 = AuthorOrm(authorname='author_1', biography='biography_1', date_of_born='10.2015')
+            author_2 = AuthorOrm(authorname='author_2', biography='biography_2', date_of_born='10.2016')
+            author_3 = AuthorOrm(authorname='author_3', biography='biography_3', date_of_born='10.2017')
+            author_4 = AuthorOrm(authorname='author_4', biography='biography_4', date_of_born='10.2018')
+            session.add_all([author_1, author_2, author_3, author_4])
+            # flush взаимодействует с БД, поэтому пишем await
+            await session.flush() 
+            await session.commit()
+
+    @staticmethod
+    async def create_authors(username, biography, date_of_born):
+        async with async_session_factory() as session:
+            author = AuthorOrm(authorname=username, biography=biography, date_of_born=date_of_born)
+            print(username)
+            session.add(author)
+            # flush взаимодействует с БД, поэтому пишем await
+            await session.flush() 
+            await session.commit()
+
+
+    @staticmethod
+    async def select_author(autors_name):
+        async with async_session_factory() as session:
+            query = (
+                select(AuthorOrm)
+                .where(AuthorOrm.authorname.in_(autors_name.split(',')))
+            )
+            res = await session.execute(query)
+            result = res.scalars().all()
+            return result
+
+
+    """ @staticmethod
+    async def update_author(updates_author):
+        async with async_session_factory() as session:
+            query = (
+                select(AuthorOrm.id)
+                .where(
+                    AuthorOrm.authorname.contains(updates_author.authorname)
+                )
+                    )
+            res = await session.execute(query)
+            upd_id = res.first()
+            upd = await session.get(AuthorOrm, upd_id[0])
+            author = {
+                'Имя': upd.authorname, 
+                'Биография': upd.biography, 
+                'Дата рождения': upd.date_of_born, 
+            } 
+            if updates_author.authorname:
+                upd.description = updates_author.description
+            if updates_author.biography:
+                upd.biography = updates_author.biography
+            if updates_author.date_of_born:
+                upd.date_of_born = updates_author.date_of_born
+            book_update = {
+                'Имя': upd.authorname, 
+                'Биография': upd.biography, 
+                'Дата рождения': upd.date_of_born, 
+            }
+            await session.flush()
+            await session.commit()
+            return {
+                'Книга с параметрами': author,
+                "Изменена на книгу с параметрами": book_update
+            } """
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @staticmethod
     async def update_user(user_email, new_username):
         async with async_session_factory() as session:
@@ -214,7 +311,3 @@ class AsyncORM:
             user.username = new_username
             await session.flush()
             await session.commit()
-
-
-
-

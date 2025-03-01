@@ -31,8 +31,8 @@ class BooksFilterSсhema(BaseModel):
     genres: Optional[str] = Field('Genre_1,Genre_2', pattern=r"^\S*$")
 
 class BooksUpdateSсhema(BaseModel):
-   bookname: Optional[str] = Field('book_1', pattern=r"^\S*$")
-   author: Optional[str] = Field('author_1', pattern=r"^\S*$")
+   bookname: str = Field('book_1', pattern=r"^\S*$")
+   author: str = Field('author_1', pattern=r"^\S*$")
    description: Optional[str] = Field(None)
    Genre: Optional[str] = Field(None)
    quantity: Optional[int] = Field(None)
@@ -40,4 +40,23 @@ class BooksUpdateSсhema(BaseModel):
 class BooksDeleteSсhema(BaseModel):
    bookname: Optional[str] = Field('book_1', pattern=r"^\S*$")
    author: Optional[str] = Field('author_1', pattern=r"^\S*$")
+
+
+
+class AuthorSсhema(BaseModel):
+   authorname: str
+   biography: str
+   date_of_born: str
+
+class AuthorFilterSсhema(BaseModel):
+   authorname: str = Field('author_1', pattern=r"^\S*$")
+
+
+""" class AuthorUpdateSсhema(BaseModel):
+   authorname: str = Field('book_1', pattern=r"^\S*$")
+   biography: Optional[str] = Field('author_1', pattern=r"^\S*$")
+   date_of_born: Optional[str] = Field(None) """
+
+
+
 

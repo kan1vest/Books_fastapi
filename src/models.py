@@ -38,7 +38,7 @@ class UsersOrm(Base):
     hashed_password = Column(String)  # Сохраняем хешированный пароль
 
 class BooksOrm(Base):   # создаем таблицы
-    __tablename__ = "books" # создаем имя таблицы
+    __tablename__ = "books_table" # создаем имя таблицы
 
     id: Mapped[intpk]
     bookname: Mapped[str]
@@ -54,14 +54,15 @@ class BooksOrm(Base):   # создаем таблицы
     ) """
     
 class AuthorOrm(Base):   # создаем таблицы
-    __tablename__ = "author" # создаем имя таблицы
+    __tablename__ = "author_table" # создаем имя таблицы
 
     id: Mapped[intpk]
-    username: Mapped[str]
+    authorname: Mapped[str]
     biography: Mapped[str]
-    born: Mapped[str]
-    """ resumes_parttime: Mapped[list["ResumesOrm"]] = relationship(
+    date_of_born: Mapped[str]
+"""   resumes_parttime: Mapped[list["ResumesOrm"]] = relationship(
         back_populates="worker",
         primaryjoin="and_(WorkersOrm.id == ResumesOrm.worker_id, ResumesOrm.workload == 'parttime')",
         order_by="ResumesOrm.id.desc()",
-    ) """
+    )
+ """

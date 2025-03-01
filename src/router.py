@@ -8,7 +8,7 @@ from sqlalchemy import table
 from queries.orm import AsyncORM, get_password_hash, verify_password
 from authx import AuthX, AuthXConfig, TokenPayload
 
-from schemas import BooksDeleteSсhema, BooksFilterSсhema, BooksSсhema, BooksUpdateSсhema, UserAuthSсhema, UserLoginSсhema
+from schemas import AuthorFilterSсhema, AuthorSсhema, BooksDeleteSсhema, BooksFilterSсhema, BooksSсhema, BooksUpdateSсhema, UserAuthSсhema, UserLoginSсhema
 
 from config import settings
 
@@ -74,7 +74,12 @@ async def protected(username: Annotated[
         return {"Имя изменено на": username}
 
 
-@router.get("/protected_admin", tags=["Управление читателями для админов, cписок читателей"], dependencies=[Depends(security_admin.access_token_required)])
+@router.get("/select_user", tags=["Cписок читателей"])
+async def select_users():
+    return await AsyncORM.select_users() 
+
+
+@router.get("/select_user/protected_admin", tags=["Список читателей, для админов, "], dependencies=[Depends(security_admin.access_token_required)])
 async def select_users():
     return await AsyncORM.select_users()      
 
@@ -82,7 +87,7 @@ async def select_users():
 
 
 ####################CRUD для книг####################
-@router.post("/protected_admin/{create_books}", tags=["CRUD для книг"], dependencies=[Depends(security_admin.access_token_required)])
+@router.post("/protected_admin/book/", tags=["CRUD для книг"], dependencies=[Depends(security_admin.access_token_required)])
 async def create_books(task: Annotated[BooksSсhema, Depends()]):
    await AsyncORM.create_books(task.bookname, task.authors, task.description, task.Genre, task.quantity)
    return {
@@ -95,9 +100,10 @@ async def create_books(task: Annotated[BooksSсhema, Depends()]):
    }
 
 
-@router.get("/protected_admin/{read_books}", tags=["CRUD для книг"], dependencies=[Depends(security_admin.access_token_required)])
-async def read_books(books_filter: Annotated[BooksFilterSсhema, Depends()]):
+@router.get("/protected_admin/book/", tags=["CRUD для книг"], dependencies=[Depends(security_admin.access_token_required)])
+async def read_books(books_filter: Annotated[BooksFilterSсhema, Depends()], response: Response):
     res = await AsyncORM.select_books(books_filter)
+    response.headers['Access-Control-Allow-Origin'] = '*'
     if res == []:
         return {
     'msg': "Книга не найдена",
@@ -110,16 +116,49 @@ async def read_books(books_filter: Annotated[BooksFilterSсhema, Depends()]):
     
 
 
-@router.put("/protected_admin/{update_books}", tags=["CRUD для книг"], dependencies=[Depends(security_admin.access_token_required)])
+@router.put("/protected_admin/book/", tags=["CRUD для книг"], dependencies=[Depends(security_admin.access_token_required)])
 async def update_books(updates: Annotated[BooksUpdateSсhema, Depends()]):
     return await AsyncORM.update_book(updates)
 
 
-@router.delete("/protected_admin/{delete_books}", tags=["CRUD для книг"], dependencies=[Depends(security_admin.access_token_required)])
+@router.delete("/protected_admin/book/", tags=["CRUD для книг"], dependencies=[Depends(security_admin.access_token_required)])
 async def delete_books(delete: Annotated[BooksDeleteSсhema, Depends()]):
     return await AsyncORM.delete_book(delete)
 
 
+####################CRUD для авторов####################
+@router.post("/protected_admin/author/", tags=["CRUD для авторов"], dependencies=[Depends(security_admin.access_token_required)])
+async def create_author(task_author: Annotated[AuthorSсhema, Depends()]):
+   await AsyncORM.create_authors(task_author.authorname, task_author.biography, task_author.born)
+   return {
+    'msg': "Автор успешно добавлен",
+    'Имя': task_author.authorname, 
+    'Биография':   task_author.biography, 
+    'Дата рождения':   task_author.born,
+   }
+
+
+@router.get("/protected_admin/author/", tags=["CRUD для авторов"], dependencies=[Depends(security_admin.access_token_required)])
+async def read_author(author_filter: Annotated[AuthorFilterSсhema, Depends()]):
+    res = await AsyncORM.select_author(author_filter.authorname)
+    if res == []:
+        return {
+    'msg': "Автор не найден",
+    'Имя': author_filter.authorname,  
+   }
+    else:
+        return res
+    
+
+ 
+""" @router.put("/protected_admin/author/", tags=["CRUD для авторов"], dependencies=[Depends(security_admin.access_token_required)])
+async def update_author(updates: Annotated[AuthorUpdateSсhema, Depends()]):
+    return await AsyncORM.update_author(updates) """
+
+""" 
+@router.delete("/protected_admin/", tags=["CRUD для авторов"], dependencies=[Depends(security_admin.access_token_required)])
+async def delete_author(delete: Annotated[BooksDeleteSсhema, Depends()]):
+    return await AsyncORM.delete_author(delete) """
 
 
     

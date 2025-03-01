@@ -15,6 +15,7 @@ from router import router as books_router
 async def main():
     await AsyncORM.create_tables()
     await AsyncORM.insert_books()
+    await AsyncORM.insert_authors()
     await AsyncORM.insert_users('Nik', 'Nik@example.com', 'string1')
     await AsyncORM.insert_users('Petr', 'Petr@example.com', 'string2')
     await AsyncORM.insert_users('Yan', 'Yan@example.com', 'string3')

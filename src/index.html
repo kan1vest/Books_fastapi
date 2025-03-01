@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Users List</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+  <h1>Users List</h1>
+  <ul id="users-list"></ul>
+
+  <script>
+    $(document).ready(function () {
+      $.get("http://127.0.0.1:8000/select_user", function (data) {
+        $.each(data, function (index, user) {
+          $("#users-list").append("<li>" + user.username + ": " + user.email + "</li>");
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>
