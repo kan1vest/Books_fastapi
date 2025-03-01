@@ -52,10 +52,10 @@ class AuthorFilterSсhema(BaseModel):
    authorname: str = Field('author_1', pattern=r"^\S*$")
 
 
-""" class AuthorUpdateSсhema(BaseModel):
-   authorname: str = Field('book_1', pattern=r"^\S*$")
-   biography: Optional[str] = Field('author_1', pattern=r"^\S*$")
-   date_of_born: Optional[str] = Field(None) """
+class AuthorUpdateSсhema(BaseModel):
+   authorname: str = Field('author_1', pattern=r"^\S*$")
+   biography: Optional[str] = Field('biography_1', pattern=r"^\S*$")
+   date_of_born: Optional[str] = Field(None)
 
 
 

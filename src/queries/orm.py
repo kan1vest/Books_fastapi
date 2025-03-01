@@ -237,7 +237,7 @@ class AsyncORM:
             return result
 
 
-    """ @staticmethod
+    @staticmethod
     async def update_author(updates_author):
         async with async_session_factory() as session:
             query = (
@@ -255,12 +255,12 @@ class AsyncORM:
                 'Дата рождения': upd.date_of_born, 
             } 
             if updates_author.authorname:
-                upd.description = updates_author.description
+                upd.authorname = updates_author.authorname
             if updates_author.biography:
                 upd.biography = updates_author.biography
             if updates_author.date_of_born:
                 upd.date_of_born = updates_author.date_of_born
-            book_update = {
+            author_update = {
                 'Имя': upd.authorname, 
                 'Биография': upd.biography, 
                 'Дата рождения': upd.date_of_born, 
@@ -268,9 +268,9 @@ class AsyncORM:
             await session.flush()
             await session.commit()
             return {
-                'Книга с параметрами': author,
-                "Изменена на книгу с параметрами": book_update
-            } """
+                'Автор с параметрами': author,
+                "Изменен на автора с параметрами": author_update
+            }
 
 
 
